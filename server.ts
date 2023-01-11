@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 
-const dbService = require("./dbService");
+const dbService = require("./db/dbService");
 
 dotenv.config();
 
