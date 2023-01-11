@@ -4,14 +4,14 @@ export const createSchemas = (connection: Connection): void => {
     const dbName = process.env.DATABASE;
     connection.query(`CREATE DATABASE ${dbName};`, (err): void => {
         if (err) {
-            console.log(`Database ${dbName} already exists.`);
+            console.log(`[DB] Database '${dbName}' already exists.`);
         } else {
-            console.log("Database created");
+            console.log("[DB] Database created");
         }
         connection.query(`USE ${dbName}`, (err): void => {
             if (err) throw err;
 
-            console.log(`Using database ${dbName}`);
+            console.log(`[DB] Using database '${dbName}'`);
 
             const createBooksTable = `CREATE TABLE books (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -31,11 +31,19 @@ export const createSchemas = (connection: Connection): void => {
                 image VARCHAR(255) NOT NULL
             )`;
 
+            const createBooksAuthorsTable = `CREATE TABLE books_authors (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                book_id INT NOT NULL,
+                author_id INT NOT NULL,
+                FOREIGN KEY (book_id) REFERENCES books(id),
+                FOREIGN KEY (author_id) REFERENCES authors(id)
+            )`;
+
             connection.query(createBooksTable, (err): void => {
                 if (err) {
-                    console.log("Table books already exists");
+                    console.log("[DB] Table 'books' already exists");
                 } else {
-                    console.log("Table books created");
+                    console.log("[DB] Table 'books' created");
                     const insertBooksRows = `INSERT INTO books (
                         name,
                         year,
@@ -102,6 +110,14 @@ export const createSchemas = (connection: Connection): void => {
                             "The Da Vinci Code is a 2003 mystery-detective novel by Dan Brown. It follows symbologist Robert Langdon and cryptologist Sophie.",
                             "https://images-na.ssl-images-amazon.com/images/I/51Zt3u7YFJL._SX331_BO1,204,203,200_.jpg",
                         ],
+                        [
+                            "In the Tall Grass",
+                            2012,
+                            19.99,
+                            320,
+                            "In the Tall Grass is a 2012 horror novella by American authors Stephen King and Joe Hill. It was first published in the October 2012 issue of Esquire magazine, and was later included in King's 2013 collection Full Dark, No Stars.",
+                            "https://images-na.ssl-images-amazon.com/images/I/51Zt3u7YFJL._SX331_BO1,204,203,200_.jpg",
+                        ],
                     ];
 
                     connection.query(
@@ -109,16 +125,18 @@ export const createSchemas = (connection: Connection): void => {
                         [books],
                         (err, result) => {
                             if (err) throw err;
-                            console.log(`${result.affectedRows} rows inserted`);
+                            console.log(
+                                `[DB] ${result.affectedRows} rows inserted into 'books'`
+                            );
                         }
                     );
                 }
             });
             connection.query(createAuthorsTable, (err): void => {
                 if (err) {
-                    console.log("Table authors already exists");
+                    console.log("[DB] Table 'authors' already exists");
                 } else {
-                    console.log("Table authors created");
+                    console.log("[DB] Table 'authors' created");
                     const insertAuthorsRows = `INSERT INTO authors (
                         name,
                         year_of_birth,
@@ -151,6 +169,18 @@ export const createSchemas = (connection: Connection): void => {
                             null,
                             "https://images-na.ssl-images-amazon.com/images/I/51Zt3u7YFJL._SX331_BO1,204,203,200_.jpg",
                         ],
+                        [
+                            "Stephen King",
+                            1947,
+                            null,
+                            "https://pl.wikipedia.org/wiki/Stephen_King#/media/Plik:Stephen_King,_Comicon.jpg",
+                        ],
+                        [
+                            "Joe Hill",
+                            1972,
+                            null,
+                            "https://en.wikipedia.org/wiki/File:Joe_Hill_by_Gage_Skidmore.jpg",
+                        ],
                     ];
 
                     connection.query(
@@ -158,7 +188,43 @@ export const createSchemas = (connection: Connection): void => {
                         [authors],
                         (err, result) => {
                             if (err) throw err;
-                            console.log(`${result.affectedRows} rows inserted`);
+                            console.log(
+                                `[DB] ${result.affectedRows} rows inserted into 'authors'`
+                            );
+                        }
+                    );
+                }
+            });
+            connection.query(createBooksAuthorsTable, (err): void => {
+                if (err) {
+                    console.log("[DB] Table 'books_authors' already exists");
+                } else {
+                    console.log("[DB] Table 'books_authors' created");
+                    const insertBooksAuthorsRows = `INSERT INTO books_authors (
+                        book_id,
+                        author_id
+                    ) VALUES ?`;
+
+                    const books_authors = [
+                        [1, 1],
+                        [2, 1],
+                        [3, 1],
+                        [4, 1],
+                        [5, 2],
+                        [6, 3],
+                        [7, 4],
+                        [8, 5],
+                        [8, 6],
+                    ];
+
+                    connection.query(
+                        insertBooksAuthorsRows,
+                        [books_authors],
+                        (err, result) => {
+                            if (err) throw err;
+                            console.log(
+                                `[DB] ${result.affectedRows} rows inserted into 'books_authors'`
+                            );
                         }
                     );
                 }

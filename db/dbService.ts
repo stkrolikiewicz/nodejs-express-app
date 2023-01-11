@@ -15,13 +15,13 @@ connection.connect((err: MysqlError) => {
     if (err) {
         console.log(err.message);
     } else {
-        console.log("Connected to MySQL server");
+        console.log("[dbService] Connected to MySQL server");
 
         try {
             createSchemas(connection);
         } catch (err) {
-            console.log(err);
+            console.log("[dbService] " + err);
         }
     }
-    console.log("db " + connection.state);
+    console.log("[dbService] Database " + connection.state);
 });
