@@ -1,7 +1,7 @@
 import mysql, { Connection, MysqlError } from "mysql";
 import dotenv from "dotenv";
 import { createSchemas } from "./createSchemas";
-import { Request, response, Response } from "express";
+import { Request } from "express";
 
 let instance: DbService | null = null;
 
