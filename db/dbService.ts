@@ -1,7 +1,7 @@
 import mysql, { Connection, MysqlError } from "mysql";
 import dotenv from "dotenv";
 import { createSchemas } from "./createSchemas";
-import { Request, Response } from "express";
+import { Request, response, Response } from "express";
 
 let instance: DbService | null = null;
 
@@ -55,7 +55,7 @@ export class DbService {
 
     async getAllData(): Promise<any> {
         try {
-            const response = await new Promise((resolve, reject) => {
+            const books = await new Promise((resolve, reject) => {
                 const query = `SELECT * FROM books;`;
 
                 connection.query(query, (err, results) => {
@@ -63,6 +63,21 @@ export class DbService {
                     resolve(results);
                 });
             });
+
+            const authors = await new Promise((resolve, reject) => {
+                const query = `SELECT name FROM authors;`;
+
+                connection.query(query, (err, results) => {
+                    if (err) reject(new Error(err.message));
+                    const authorsArray = results.map(
+                        (author: any) => author.name
+                    );
+                    resolve(authorsArray);
+                });
+            });
+
+            const response = { books, authors };
+
             return response;
         } catch (err) {
             console.log(err);
