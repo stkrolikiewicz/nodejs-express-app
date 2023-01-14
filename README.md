@@ -43,7 +43,7 @@ The request should be sent to `http://localhost:8000/` (if the global PORT varia
 ### <ins>Pagination</ins>
 
 If you want to use pagination you can do it for books table using request params **page** and **limit** (have to exist together).
-Here is an example of GET requests URL: `http://localhost:8000/books?**page**=2&**limit**=3`
+Here is an example of GET requests URL: `http://localhost:8000/books?page=2&limit=3`
 
 ## Technologies
 
