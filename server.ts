@@ -1,19 +1,19 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
-
 import { DbService } from "./db/dbService";
-const dbService = require("./db/dbService");
 
 dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT;
 
+DbService.connectToDb();
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 //create
-app.post("/insert", (req: Request, res: Response) => {
+app.post("/books/insert", (req: Request, res: Response) => {
     const db = DbService.getDbServiceInstance();
     const result = db.insertNewBook(req);
 
@@ -23,18 +23,51 @@ app.post("/insert", (req: Request, res: Response) => {
 });
 
 //read
-app.get("/", (req: Request, res: Response) => {
+app.get("/books", (req: Request, res: Response) => {
     const db = DbService.getDbServiceInstance();
+
+    const page: number = parseInt(req.query.page as string, 10);
+    const limit: number = parseInt(req.query.limit as string, 10);
+
+    const startIndex: number = (page - 1) * limit;
+    const endIndex: number = page * limit;
 
     const result = db.getAllData();
 
+    console.log(page, limit);
+
     result
-        .then((data: any) => res.json({ data: data }))
+        .then((data: any) => {
+            const paginatedBooksData = data.books.slice(startIndex, endIndex);
+            const allBooksData = data.books;
+            const booksData = page && limit ? paginatedBooksData : allBooksData;
+            const authorsArray = data.authors;
+            let next, previous;
+            if (endIndex < data.books.length) {
+                next = data.next = {
+                    page: page + 1,
+                    limit: limit,
+                };
+            }
+            if (startIndex > 0) {
+                previous = data.previous = {
+                    page: page - 1,
+                    limit: limit,
+                };
+            }
+            const results = {
+                next,
+                previous,
+                booksData,
+                authorsArray,
+            };
+            res.json(results);
+        })
         .catch((err: Error) => console.log(err));
 });
 
 //update
-app.patch("/update", (req: Request, res: Response) => {
+app.patch("/books/update", (req: Request, res: Response) => {
     const db = DbService.getDbServiceInstance();
 
     const result = db.updateBook(req);
@@ -45,7 +78,7 @@ app.patch("/update", (req: Request, res: Response) => {
 });
 
 //delete
-app.delete("/delete/:id", (req: Request, res: Response) => {
+app.delete("/books/delete/:id", (req: Request, res: Response) => {
     const db = DbService.getDbServiceInstance();
 
     const result = db.deleteBook(req.params.id);
@@ -56,5 +89,5 @@ app.delete("/delete/:id", (req: Request, res: Response) => {
 });
 
 app.listen(port, () => {
-    console.log(`[server]: Server is running at http://localhost:${port}`);
+    console.log(`[server] Server is running at http://localhost:${port}`);
 });
