@@ -38,7 +38,7 @@ $ nodemon server.ts
 
 ### <ins>Requests</ins>
 
-The request should be sent to `http://localhost:8000/` (if the global PORT variable i set to 8000)
+Requests should be sent to `http://localhost:8000/` (if the global PORT variable i set to 8000)
 
 ### <ins>Pagination</ins>
 
