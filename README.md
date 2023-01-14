@@ -30,19 +30,19 @@ To run the project you have to use command (inside the project folder):
 $ node server.ts
 ```
 
-or if you whant to relaod the server automatically after each change in compiled files:
+or if you want to relaod the server automatically after each change in compiled files:
 
 ```
 $ nodemon server.ts
 ```
 
-### <u>Requests</u>
+### <ins>Requests</ins>
 
 The request should be sent to `http://localhost:8000/` (if the global PORT variable i set to 8000)
 
-### <u>Pagination</u>
+### <ins>Pagination</ins>
 
-If you want to use pagination you can do it for books table using reqest params page and limit (have to exist together).
+If you want to use pagination you can do it for books table using request params **page** and **limit** (have to exist together).
 Here is an example of GET requests URL: `http://localhost:8000/books?page=2&limit=3`
 
 ## Technologies
